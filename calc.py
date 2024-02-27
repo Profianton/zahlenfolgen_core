@@ -5,10 +5,10 @@ from matplotlib import pyplot as plt
 from fractions import Fraction
 plt.switch_backend('agg')                    # stabilisiert Plots
 
-# zahl schön darstellen
-
 
 def stringify_number(number):
+    """Funktion, um Zahlen schön als String darstellen. Damit können Zahlen leicht lesbar ausgegeben werden. z.B. als 1+1/2
+    """
     fraction = Fraction(number).limit_denominator()
     whole_part = int(fraction)
     fractional_part = fraction - whole_part
@@ -19,10 +19,9 @@ def stringify_number(number):
     else:
         return f"{whole_part}+{fractional_part}"
 
-# Überprüfen, ob eine nicht rekursive folge die richtige ist
-
 
 def check_expression(string):
+    """Überprüfen, ob eine nicht-rekursive Folge die Richtige ist"""
     for idx, num in enumerate(list_with_numbers):
         if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
             return None
@@ -32,11 +31,10 @@ def check_expression(string):
     if result != None:
         return string, result, "Normal"
 
-# Einen Operator und eine Zahl Ergänzen, wenn Komplexitat übrig ist, sonst Formel prüfen
-# Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird.
-
 
 def normal_move(complexity_left, string):
+    """Einen Operator und eine Zahl ergänzen, wenn Komplexität übrig ist, sonst Formel prüfen
+    Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird."""
     if complexity_left == 0:
         # Formel prüfen
         return check_expression(string)
@@ -53,29 +51,27 @@ def normal_move(complexity_left, string):
                 if result != None:
                     return result
 
-# Funktion zum Ausrechnen von nicht-rekursiven Formeln
-
 
 def calculate(n, string):
+    """Funktion zum Ausrechnen von nicht-rekursiven Formeln"""
+
     string = string.replace("n", str(n))
     try:
         return calc(string)
     except ZeroDivisionError:
         return None
 
-# Negative Zahlen für calc vorbereiten
-
 
 def tokenize_fix(num):
+    """Negative Zahlen für calc vorbereiten"""
     if num < 0:
         return f"(0-{-num})"
     else:
         return str(num)
 
-# Funktion zum Ausrechnen von rekursiven Formeln
-
 
 def calculate_recursive(n, string):
+    """Funktion zum Ausrechnen von rekursiven Formeln"""
     # Elemente f(n-1) und f(n-2) durch den Wert ersetzen und n einfügen
     string = (
         string.replace("f(n-2)", tokenize_fix(list_with_numbers[n - 3]))
@@ -88,11 +84,11 @@ def calculate_recursive(n, string):
     except ZeroDivisionError:
         return None
 
-# Einen Operator und eine Zahl ergänzen, solange Komplexität übrig ist, ansonsten Formel prüfen für nicht-rekursive Folgen
-# Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird.
-
 
 def recursive_normal_move(complexity_left, string):
+    """Einen Operator und eine Zahl ergänzen, solange Komplexität übrig ist, ansonsten Formel prüfen für nicht-rekursive Folgen
+Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird.
+"""
     if complexity_left == 0:
         if not (("f(n-2)" in string) or ("f(n-1)" in string)):
             return None
@@ -142,7 +138,9 @@ def first_move(complexity):
 
 
 def run_with_complexity(max_complexity):
+    """Wrapper (Übersichtliches Interface) für "first_move" """
     global operators, numbers
+    # Erlaubte Operatoren festlegen
     operators = [
         {"z": "*", "c": 1},
         {"z": "/", "c": 1},
@@ -150,12 +148,15 @@ def run_with_complexity(max_complexity):
         {"z": "-", "c": 1},
         {"z": "^", "c": 1},
     ]
-    numbers = [f"{num}" for num in list(range(0, 6))] + ["n", "(n-1)", "(0-1)"]
+    # Erlaubte Zahlen festlegen
+    numbers = [f"{num}" for num in list(
+        range(1, 6))] + ["n", "(n-1)", "(0-1)", "10"]
 
     return first_move(max_complexity)
 
 
 def get_inputs():
+    """Funktion zum Erhalten von Nutzereingaben, wenn nicht das GUI, sondern die Kommandozeile verwendet wird"""
     list_with_numbers = []
     os.system("cls" if os.name == "nt" else "clear")
     while True:
@@ -186,6 +187,8 @@ real_print = print
 
 
 def solve(numbers):
+    """Zentrale Funktion zum Lösen von Formeln"""
+    plt.clf()   # plots Löschen
     global log
     log = ""
     # custom print Funktion, um alles mit zu loggen
@@ -221,8 +224,7 @@ def solve(numbers):
                     f"the formula was '{formula}' and the next numbers are {', '.join([stringify_number(
                         calculate(i, formula)) for i in range(len(list_with_numbers)+1, len(list_with_numbers)+5)])}."
                 )
-                # list_with_numbers+=[calculate(i,formula) for i in range(len(list_with_numbers)+1,len(list_with_numbers)+5)]
-                # [calculate(i,formula) for i in range(0,len(list_with_numbers)+10,0.1)]
+                # Plotten von nicht-rekursiven folgen
                 plt.plot(
                     [i /
                         10 for i in range(0, (len(list_with_numbers) + 10) * 10, 1)],
@@ -243,6 +245,7 @@ def solve(numbers):
                 ols_list_with_numbers = list_with_numbers.copy()
                 for i in range(len(list_with_numbers) + 1, len(list_with_numbers) + 10):
                     list_with_numbers.append(calculate_recursive(i, formula))
+                # Plotten von rekursiven Folgen
                 plt.plot(
                     list_with_numbers,
                     "o-"
@@ -256,12 +259,14 @@ def solve(numbers):
                 f"solved complexity {complexity} problem in {
                     round(time()-start_time, 5)} seconds."
             )
-            # plot generieren
-            plt.clf()
+            # Plot generieren
+            # Plot Folge
             plt.xticks(range(0, len(list_with_numbers), 1))
             plt.title("Folge")
 
             plt.savefig(f"{zahlenfolgen_dir}/plot.png")
+
+            # Plot Reihe
             plt.clf()
             plt.xticks(range(0, len(list_with_numbers), 1))
 
