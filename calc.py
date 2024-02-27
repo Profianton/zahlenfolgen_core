@@ -287,9 +287,11 @@ def solve(numbers):
             complexity += 1
 
 
+# Referenzcode zum Testen der Performanz des Programms
 if __name__ == "__main__":
     start = time()
     for _ in range(5):
         solve([1, 1, 2, 3, 5, 8, 13])
     print(f"time_average: {(time()-start)/5}")
+
 zahlenfolgen_dir = "/".join(__file__.replace("\\", "/").split("/")[:-2])
