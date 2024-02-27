@@ -120,6 +120,7 @@ Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt w
 
 
 def recusive_first_move(complexity):
+    """Funktion zum Hinzufügen der ersten Zahl und aufrufen von recursive_normal_move"""
     global numbers_recusive
     numbers_recusive = numbers + ["f(n-1)", "f(n-2)", "(f(n-1)-f(n-2))"]
     for number in numbers_recusive:
@@ -129,6 +130,7 @@ def recusive_first_move(complexity):
 
 
 def first_move(complexity):
+    """Funktion zum Hinzufügen der ersten Zahl und Aufrufen von "normal_move" und recursive_fist_move, falls die Komplexität größer als 1 ist"""
     for num in numbers:
         result = normal_move(complexity, num)
         if result != None:
@@ -183,17 +185,17 @@ def get_inputs():
     return list_with_numbers
 
 
-real_print = print
+real_print = print   # Die standard-python print-Funktion habe ich umbenannt
 
 
 def solve(numbers):
     """Zentrale Funktion zum Lösen von Formeln"""
-    plt.clf()   # plots Löschen
+    plt.clf()   # Plots Löschen
     global log
     log = ""
-    # custom print Funktion, um alles mit zu loggen
 
     def print(x):
+        """Eigene, customized print-Funktion, um alles mit zu loggen und an das Frontend zu schicken"""
         global real_print
         real_print(x)
         global log
@@ -224,7 +226,7 @@ def solve(numbers):
                     f"the formula was '{formula}' and the next numbers are {', '.join([stringify_number(
                         calculate(i, formula)) for i in range(len(list_with_numbers)+1, len(list_with_numbers)+5)])}."
                 )
-                # Plotten von nicht-rekursiven folgen
+                # Plotten von nicht-rekursiven Folgen
                 plt.plot(
                     [i /
                         10 for i in range(0, (len(list_with_numbers) + 10) * 10, 1)],
@@ -259,7 +261,7 @@ def solve(numbers):
                 f"solved complexity {complexity} problem in {
                     round(time()-start_time, 5)} seconds."
             )
-            # Plot generieren
+            # Plots generieren
             # Plot Folge
             plt.xticks(range(0, len(list_with_numbers), 1))
             plt.title("Folge")
