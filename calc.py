@@ -5,6 +5,8 @@ from matplotlib import pyplot as plt
 from fractions import Fraction
 plt.switch_backend('agg')                    # stabilisiert Plots
 
+# zahl schön darstellen
+
 
 def stringify_number(number):
     fraction = Fraction(number).limit_denominator()
@@ -17,29 +19,41 @@ def stringify_number(number):
     else:
         return f"{whole_part}+{fractional_part}"
 
+# Überprüfen, ob eine nicht rekursive folge die richtige ist
+
 
 def check_expression(string):
     for idx, num in enumerate(list_with_numbers):
-        if calculate(idx + 1, string) != num:
+        if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
             return None
+    # Rechne nächstes Element aus, wenn die ersten Folgeglieder passen
     n = len(list_with_numbers) + 1
     result = calculate(n, string)
     if result != None:
         return string, result, "Normal"
 
+# Einen Operator und eine Zahl Ergänzen, wenn Komplexitat übrig ist, sonst Formel prüfen
+# Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird.
+
 
 def normal_move(complexity_left, string):
     if complexity_left == 0:
+        # Formel prüfen
         return check_expression(string)
+    # operator anhängen
     for operator in operators:
         if operator["c"] <= complexity_left:
+            # Zahl anhängen
             for num in numbers:
                 result = normal_move(
                     complexity_left -
                     operator["c"], string + operator["z"] + num
                 )
+                # Ergebnis der Formel zurückgeben, wenn die Formel passt
                 if result != None:
                     return result
+
+# Funktion zum Ausrechnen von nicht-rekursiven Formeln
 
 
 def calculate(n, string):
@@ -49,27 +63,36 @@ def calculate(n, string):
     except ZeroDivisionError:
         return None
 
+# Negative Zahlen für calc vorbereiten
 
-def tokenisefix(num):
+
+def tokenize_fix(num):
     if num < 0:
         return f"(0-{-num})"
     else:
         return str(num)
 
+# Funktion zum Ausrechnen von rekursiven Formeln
+
 
 def calculate_recursive(n, string):
+    # Elemente f(n-1) und f(n-2) durch den Wert ersetzen und n einfügen
     string = (
-        string.replace("f(n-2)", tokenisefix(list_with_numbers[n - 3]))
-        .replace("f(n-1)", tokenisefix(list_with_numbers[n - 2]))
+        string.replace("f(n-2)", tokenize_fix(list_with_numbers[n - 3]))
+        .replace("f(n-1)", tokenize_fix(list_with_numbers[n - 2]))
         .replace("n", str(n))
     )
     try:
+        # ausrechnen
         return calc(string)
     except ZeroDivisionError:
         return None
 
+# Einen Operator und eine Zahl ergänzen, solange Komplexität übrig ist, ansonsten Formel prüfen für nicht-rekursive Folgen
+# Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird.
 
-def recusive_normal_move(complexity_left, string):
+
+def recursive_normal_move(complexity_left, string):
     if complexity_left == 0:
         if not (("f(n-2)" in string) or ("f(n-1)" in string)):
             return None
@@ -92,7 +115,7 @@ def recusive_normal_move(complexity_left, string):
     for operator in operators:
         if operator["c"] <= complexity_left:
             for num in numbers_recusive:
-                result = recusive_normal_move(
+                result = recursive_normal_move(
                     complexity_left -
                     operator["c"], string + operator["z"] + num
                 )
@@ -104,7 +127,7 @@ def recusive_first_move(complexity):
     global numbers_recusive
     numbers_recusive = numbers + ["f(n-1)", "f(n-2)", "(f(n-1)-f(n-2))"]
     for number in numbers_recusive:
-        result = recusive_normal_move(complexity, number)
+        result = recursive_normal_move(complexity, number)
         if result != None:
             return result
 
@@ -163,9 +186,9 @@ real_print = print
 
 
 def solve(numbers):
-    plt.clf()
     global log
     log = ""
+    # custom print Funktion, um alles mit zu loggen
 
     def print(x):
         global real_print
@@ -233,6 +256,8 @@ def solve(numbers):
                 f"solved complexity {complexity} problem in {
                     round(time()-start_time, 5)} seconds."
             )
+            # plot generieren
+            plt.clf()
             plt.xticks(range(0, len(list_with_numbers), 1))
             plt.title("Folge")
 
