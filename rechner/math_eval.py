@@ -2,6 +2,8 @@ import math
 
 
 class operator:
+    """Klasse in der alle Operatoren zum Ausrechnen gespeichert sind. D.h. aus dem Rechenzeichen wird eine Funktion"""
+
     def __init__(self, zeichen, name, function):
         self.zeichen, self.name, self.function = zeichen, name, function
 
@@ -33,10 +35,15 @@ def pow(b, e):
 
 
 operators = [
+    # definiere Malzeichen als Funktion multiply
     operator("*", "o_mal", multiply),
+    # definiere Geteiltzeichen als Funktion divide
     operator("/", "o_teilen", divide),
+    # definiere Pluszeichen als Funktion add
     operator("+", "o_plus", add),
+    # definiere Minuszeichen als Funktion subtract
     operator("-", "o_minus", subtract),
+    # definiere Potenzzeichen als Funktion pow
     operator("^", "o_power", pow),
 ]
 
@@ -50,6 +57,8 @@ def get_operator_from_string(string):
 
 
 def analyse(string):
+    """Hier wird die Formel analysiert und tokenized (Mit Tokenizing kann ein String in Tokens aufgeteilt werden.
+)"""
     string = string.replace(",", ".")
     parts = []
     i = 0
@@ -90,7 +99,7 @@ reihenfolge = [
 ]
 
 
-def prase_to_nested_operator(parts):
+def parse_to_nested_operator(parts):
     for operators_on_level in reihenfolge:
         i = 0
         while i < len(parts):
@@ -113,7 +122,7 @@ def prase_to_nested_operator(parts):
     return parts[0]
 
 
-def prase_klammern(parts):
+def parse_klammern(parts):
     i = 0
     klammer_layer = 0
     while i < len(parts):
@@ -129,17 +138,18 @@ def prase_klammern(parts):
 
                 if klammer_layer == 0:
                     parts[start_i: i +
-                          1] = [prase_klammern(parts[start_i + 1: i])]
+                          1] = [parse_klammern(parts[start_i + 1: i])]
                     i = start_i
 
         i += 1
 
-    parts = prase_to_nested_operator(parts)
+    parts = parse_to_nested_operator(parts)
 
     return parts
 
 
 def get_title(node):
+    """Funktion, die den Namen eines Elements im Rechenbaums generiert"""
     type_of_node, value = node
     if type_of_node == "n":
         return value
@@ -152,6 +162,7 @@ def get_title(node):
 
 
 def draw_node(node):
+    """Funktion, zum Zeichnen eines Rechenbaums - wird hauptsächlich zum Debuggen verwendet"""
     type_of_node, value = node
     result = calculate_from_node(node)
     string = (
@@ -224,7 +235,7 @@ def draw_node(node):
 
 def parse(string, should_draw_node=False):
     parts = analyse(string)
-    node = prase_klammern(parts)
+    node = parse_klammern(parts)
     if should_draw_node:
         with open("node", "w", encoding="UTF-8") as f:
             f.write(draw_node(node))
