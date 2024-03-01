@@ -3,9 +3,10 @@ from .rechner.math_eval import calculate as calc
 from time import time
 import os
 from fractions import Fraction
-from openpyxl import Workbook
+from openpyxl import Workbook, drawing, styles
 from matplotlib import pyplot as plt
 plt.switch_backend('agg')                    # stabilisiert Plots
+Font = styles.Font
 
 
 def stringify_number(number):
@@ -296,8 +297,11 @@ def gen_excel(formula, list_with_numbers, type):
     wb = Workbook()
     ws = wb.active
     ws["A1"].value = "n"
+    ws['A1'].font = Font(bold=True)
     ws["B1"].value = "Folge f(n)"
-    ws["C1"].value = "Reihe"
+    ws['B1'].font = Font(bold=True)
+    ws["C1"].value = "Reihe ∑f(n)"
+    ws['C1'].font = Font(bold=True)
     for n in range(1, 10+1, 1):
         ws[f"A{n+1}"].value = n
         ws[f"B{n+1}"].value = \
@@ -306,10 +310,31 @@ def gen_excel(formula, list_with_numbers, type):
                  .replace("n", f"A{n+1}"))
         ws[f"C{n+1}"].value = f"=C{n}+B{n+1}"
     ws["C2"].value = "=B2"
+
     if type == "Recursive":
         ws["B2"] = list_with_numbers[0]
         if "f(n-2)" in formula:
             ws["B3"] = list_with_numbers[1]
+
+    ws["E1"].value = "Formel"
+    ws['E1'].font = Font(bold=True)
+    ws["E2"].value = f"f(1)={formula}"
+    ws['E2'].font = Font(bold=True)
+
+    if type == "Recursive":
+        ws["E3"] = f"f(1)={list_with_numbers[0]}"
+        ws['E3'].font = Font(bold=True)
+
+        if "f(n-2)" in formula:
+            ws["E4"] = f"f(1)={list_with_numbers[1]}"
+            ws['E4'].font = Font(bold=True)
+
+    img = drawing.image.Image(f"{zahlenfolgen_dir}/plot.png")
+    img.anchor = 'G1'
+    ws.add_image(img)
+    img = drawing.image.Image(f"{zahlenfolgen_dir}/series.png")
+    img.anchor = 'P1'
+    ws.add_image(img)
 
     wb.save(f"{zahlenfolgen_dir}/excel.xlsx")
 

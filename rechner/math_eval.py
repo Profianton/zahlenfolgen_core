@@ -1,5 +1,8 @@
 import math
 
+'''In math_eval wird eine eigene Funktion geschrieben, die die  Standard-Auswerte-Funktion eval ersetzen kann'''
+'''Dadurch kann Python-Code, inklusive Rechenausdrücken ausgewertet werden'''
+
 
 class operator:
     """Klasse in der alle Operatoren zum Ausrechnen gespeichert sind. D.h. aus dem Rechenzeichen wird eine Funktion"""
@@ -92,6 +95,8 @@ def analyse(string):
     return parts
 
 
+# Hier wird die Reihenfolge festgelegt, so dass auch der Computer nach den allgemeinen Rechengesetzen arbeitet.
+# Klammer vor Potenz, vor Punkt (* und geteilt), vor Strich
 reihenfolge = [
     [get_operator_from_string("^")],
     [get_operator_from_string("*"), get_operator_from_string("/")],
@@ -100,6 +105,7 @@ reihenfolge = [
 
 
 def parse_to_nested_operator(parts):
+    '''Hilfsfunktion um den String zu parsen'''
     for operators_on_level in reihenfolge:
         i = 0
         while i < len(parts):
@@ -123,6 +129,8 @@ def parse_to_nested_operator(parts):
 
 
 def parse_klammern(parts):
+    '''Hauptfunktion um den String zu parsen
+        Priorisierung von Klammern in Rechenausdrücken'''
     i = 0
     klammer_layer = 0
     while i < len(parts):
@@ -162,7 +170,7 @@ def get_title(node):
 
 
 def draw_node(node):
-    """Funktion, zum Zeichnen eines Rechenbaums - wird hauptsächlich zum Debuggen verwendet"""
+    """Funktion, zum Zeichnen eines Rechenbaums - wird hauptsächlich zum Debuggen von math_eval verwendet"""
     type_of_node, value = node
     result = calculate_from_node(node)
     string = (
@@ -234,6 +242,7 @@ def draw_node(node):
 
 
 def parse(string, should_draw_node=False):
+    '''Wrapper für parse-Klammern - vereinfacht das Parsen'''
     parts = analyse(string)
     node = parse_klammern(parts)
     if should_draw_node:
@@ -243,13 +252,18 @@ def parse(string, should_draw_node=False):
 
 
 def calculate(string):
+    '''Wrapper für das Ausrechnen - vereinfacht das Ausrechnen'''
     return calculate_from_node(parse(string))
 
 
 def calculate_from_node(node):
-    type, value = node
-    if type == "n":
+    '''Ausrechnen der Zahlenwerte über die geparsten Formeln
+    erwartet als Eingabe den geparsten String mit der Rechenvorschrift'''
+
+    type, value = node  # Tupel node wird in 2 Variablen entpackt
+    if type == "n":  # Falls eine Zahl "n" (number) - Wert zurückkgeben
         return value
+    # Falls ein verschachtelter Operator (nested operator) "n" - Wert ausrechnen und zurückgeben
     elif type == "no":
         return value["o"].function(
             calculate_from_node(value["other_points"][0]),
