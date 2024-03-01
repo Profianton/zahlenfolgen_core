@@ -2,8 +2,9 @@
 from .rechner.math_eval import calculate as calc
 from time import time
 import os
-from matplotlib import pyplot as plt
 from fractions import Fraction
+from openpyxl import Workbook
+from matplotlib import pyplot as plt
 plt.switch_backend('agg')                    # stabilisiert Plots
 
 
@@ -282,12 +283,35 @@ def solve(numbers):
             )
 
             plt.savefig(f"{zahlenfolgen_dir}/series.png")
-
+            gen_excel(formula, list_with_numbers, type)
             solved = True
             print((formula, list_with_numbers, type))
             return (formula, list_with_numbers, type, log, series)
         else:
             complexity += 1
+
+
+def gen_excel(formula, list_with_numbers, type):
+    """Funktion, um Excel-Datei zu generieren"""
+    wb = Workbook()
+    ws = wb.active
+    ws["A1"].value = "n"
+    ws["B1"].value = "Folge f(n)"
+    ws["C1"].value = "Reihe"
+    for n in range(1, 10+1, 1):
+        ws[f"A{n+1}"].value = n
+        ws[f"B{n+1}"].value = \
+            "="+(formula.replace("f(n-1)", f"B{n}")
+                 .replace("f(n-2)", f"B{n-1}")
+                 .replace("n", f"A{n+1}"))
+        ws[f"C{n+1}"].value = f"=C{n}+B{n+1}"
+    ws["C2"].value = "=B2"
+    if type == "Recursive":
+        ws["B2"] = list_with_numbers[0]
+        if "f(n-2)" in formula:
+            ws["B3"] = list_with_numbers[1]
+
+    wb.save(f"{zahlenfolgen_dir}/excel.xlsx")
 
 
 # Referenzcode zum Testen der Performanz des Programms
