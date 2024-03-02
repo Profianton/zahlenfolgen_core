@@ -168,7 +168,7 @@ def get_inputs():
         if list_with_numbers == []:
             string = f"Enter a number:"
         else:
-            string = f"Enter a number (or press 'Enter' to finish)\n {', '.join(
+            string = f"Enter a number (or press 'Enter' to finish) \n {', '.join(
                 [stringify_number(number) for number in list_with_numbers])}, "
         number = input(string)
         os.system("cls" if os.name == "nt" else "clear")
@@ -249,7 +249,11 @@ def solve(numbers):
             else:
                 ols_list_with_numbers = list_with_numbers.copy()
                 for i in range(len(list_with_numbers) + 1, len(list_with_numbers) + 10):
-                    list_with_numbers.append(calculate_recursive(i, formula))
+                    try:
+                        list_with_numbers.append(
+                            calculate_recursive(i, formula))
+                    except:
+                        break
                 # Plotten von rekursiven Folgen
                 plt.plot(
                     list_with_numbers,
