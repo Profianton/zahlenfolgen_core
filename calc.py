@@ -24,6 +24,7 @@ def stringify_number(number):
 
 
 def check_expression(string):
+    print(string)
     """Überprüfen, ob eine nicht-rekursive Folge die Richtige ist"""
     for idx, num in enumerate(list_with_numbers):
         if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
@@ -95,6 +96,7 @@ Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt w
     if complexity_left == 0:
         if not (("f(n-2)" in string) or ("f(n-1)" in string)):
             return None
+        print(string)
         items_to_check = list(enumerate(list_with_numbers))
         if "f(n-2)" in string:
             items_to_check = items_to_check[2:]
@@ -168,8 +170,7 @@ def get_inputs():
         if list_with_numbers == []:
             string = f"Enter a number:"
         else:
-            string = f"Enter a number (or press 'Enter' to finish) \n {', '.join(
-                [stringify_number(number) for number in list_with_numbers])}, "
+            string = f"Enter a number (or press 'Enter' to finish) \n {', '.join([stringify_number(number) for number in list_with_numbers])}, "
         number = input(string)
         os.system("cls" if os.name == "nt" else "clear")
         if number == "" and list_with_numbers != []:
@@ -182,8 +183,7 @@ def get_inputs():
             except:
                 print("Invalid input")
     print(
-        f"\nYou entered the following numbers: {
-            ', '.join([stringify_number(number) for number in list_with_numbers])}"
+        f"\nYou entered the following numbers: {', '.join([stringify_number(number) for number in list_with_numbers])}"
     )
     return list_with_numbers
 
@@ -216,26 +216,22 @@ def solve(numbers):
         complexity_start_time = time()
         output = run_with_complexity(complexity)
         print(
-            f"complexity {complexity} finished in {
-                round(time()-complexity_start_time, 5)} seconds."
+            f"complexity {complexity} finished in {round(time()-complexity_start_time, 5)} seconds."
         )
         if output != None:
             formula, next_number, type = output
-            for i in range(len(list_with_numbers) + 1, len(list_with_numbers) + 10):
-                list_with_numbers.append(calculate_recursive(i, formula))
 
             if type == "Normal":
                 print(
-                    f"the formula was '{formula}' and the next numbers are {', '.join([stringify_number(
-                        calculate(i, formula)) for i in range(len(list_with_numbers)+1, len(list_with_numbers)+5)])}."
+                    f"the formula was '{formula}' and the next numbers are {', '.join([stringify_number(calculate(i, formula)) for i in range(len(list_with_numbers)+1, len(list_with_numbers)+5)])}."
                 )
                 # Plotten von nicht-rekursiven Folgen
                 plt.plot(
                     [i /
-                        10 for i in range(0, (len(list_with_numbers) + 10) * 10, 1)],
+                        10 for i in range(0, (len(list_with_numbers) + 10) * 10-9, 1)],
                     [
                         calculate(i / 10, formula)
-                        for i in range(0, (len(list_with_numbers) + 10) * 10, 1)
+                        for i in range(0, (len(list_with_numbers) + 10) * 10-9, 1)
                     ],
                 )
                 plt.plot(
@@ -246,6 +242,7 @@ def solve(numbers):
                     ],
                     "o "
                 )
+                plt.xticks(range(0, len(list_with_numbers)+1, 1))
             else:
                 ols_list_with_numbers = list_with_numbers.copy()
                 for i in range(len(list_with_numbers) + 1, len(list_with_numbers) + 10):
@@ -259,26 +256,25 @@ def solve(numbers):
                     list_with_numbers,
                     "o-"
                 )
+                plt.xticks(range(0, len(list_with_numbers), 1))
                 print(
-                    f"the recursive formula was 'f(n)={formula}' and the next numbers are {', '.join(
-                        [stringify_number(number) for number in list_with_numbers[len(ols_list_with_numbers):]])}."
+                    f"the recursive formula was 'f(n)={formula}' and the next numbers are {', '.join([stringify_number(number) for number in list_with_numbers[len(ols_list_with_numbers):]])}."
                 )
 
             print(
-                f"solved complexity {complexity} problem in {
-                    round(time()-start_time, 5)} seconds."
+                f"solved complexity {complexity} problem in {round(time()-start_time, 5)} seconds."
             )
             # Plots generieren
             # Plot Folge
-            plt.xticks(range(0, len(list_with_numbers), 1))
             plt.title("Folge")
 
             plt.savefig(f"{zahlenfolgen_dir}/plot.png")
 
             # Plot Reihe
             plt.clf()
+            for i in range(len(list_with_numbers) + 1, len(list_with_numbers) + 10):
+                list_with_numbers.append(calculate_recursive(i, formula))
             plt.xticks(range(0, len(list_with_numbers), 1))
-
             plt.title("Reihe (Summe der Folgenelemente)")
             series = [sum(list_with_numbers[:i+1]) for i in range(
                 0, len(list_with_numbers), 1)]  # Mathematische Reihe
@@ -322,7 +318,7 @@ def gen_excel(formula, list_with_numbers, type):
 
     ws["E1"].value = "Formel"
     ws['E1'].font = Font(bold=True)
-    ws["E2"].value = f"f(1)={formula}"
+    ws["E2"].value = f"f(n)={formula}"
     ws['E2'].font = Font(bold=True)
 
     if type == "Recursive":
