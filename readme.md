@@ -1,3 +1,3 @@
 **Zahlenfolgen erkennen**
 
-in diesem repo ist der hauptteil des codes online gestellt
+in diesem repo habe den Hauptteil des Codes online gestellt
