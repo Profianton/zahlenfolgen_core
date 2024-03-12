@@ -1,7 +1,6 @@
 import math
 
 '''In math_eval wird eine eigene Funktion geschrieben, die die  Standard-Auswerte-Funktion eval ersetzen kann'''
-'''Dadurch kann Python-Code, inklusive Rechenausdrücken ausgewertet werden'''
 
 
 class operator:
@@ -60,8 +59,17 @@ def get_operator_from_string(string):
 
 
 def analyse(string):
-    """Hier wird die Formel analysiert und tokenized (Mit Tokenizing kann ein String in Tokens aufgeteilt werden.
-)"""
+    """Hier wird die Formel analysiert und tokenized (Mit Tokenizing kann ein String in Tokens aufgeteilt werden.)
+
+    Args:
+        string (string): Formel
+
+    Raises:
+        ValueError: Keine sinnvolle Formel
+
+    Returns:
+        list: Tokenisierter string
+    """
     string = string.replace(",", ".")
     parts = []
     i = 0
@@ -105,7 +113,6 @@ reihenfolge = [
 
 
 def parse_to_nested_operator(parts):
-    '''Hilfsfunktion um den String zu parsen'''
     for operators_on_level in reihenfolge:
         i = 0
         while i < len(parts):
@@ -129,8 +136,15 @@ def parse_to_nested_operator(parts):
 
 
 def parse_klammern(parts):
-    '''Hauptfunktion um den String zu parsen
-        Priorisierung von Klammern in Rechenausdrücken'''
+    """Hauptfunktion um den String zu parsen
+        Priorisierung von Klammern in Rechenausdrücken
+
+    Args:
+        parts (list): tokenised String
+
+    Returns:
+        parsed Formel
+    """
     i = 0
     klammer_layer = 0
     while i < len(parts):
@@ -242,7 +256,16 @@ def draw_node(node):
 
 
 def parse(string, should_draw_node=False):
-    '''Wrapper für parse-Klammern - vereinfacht das Parsen'''
+    """Wrapper für parse-Klammern - vereinfacht das Parsen
+
+    Args:
+        string (string): Formel
+        should_draw_node (bool, optional): Rechenbaum generieren. Defaults to False.
+
+    Returns:
+        parsed Formel
+    """
+
     parts = analyse(string)
     node = parse_klammern(parts)
     if should_draw_node:
@@ -252,13 +275,27 @@ def parse(string, should_draw_node=False):
 
 
 def calculate(string):
-    '''Wrapper für das Ausrechnen - vereinfacht das Ausrechnen'''
+    """Wrapper für das Ausrechnen - vereinfacht das Ausrechnen
+
+    Args:
+        string (string): Formel
+
+    Returns:
+        int | float: Ergebnis
+    """
     return calculate_from_node(parse(string))
 
 
 def calculate_from_node(node) -> int | float:
-    '''Ausrechnen der Zahlenwerte über die geparsten Formeln
-    erwartet als Eingabe den geparsten String mit der Rechenvorschrift'''
+    """Ausrechnen der Zahlenwerte über die geparsten Formeln
+    erwartet als Eingabe den geparsten String mit der Rechenvorschrift
+
+    Args:
+        node: geparster Teil des Rechenbaums
+
+    Returns:
+        int | float: Ergebnis
+    """
 
     type, value = node  # Tupel node wird in 2 Variablen entpackt
     if type == "n":  # Falls eine Zahl "n" (number) - Wert zurückkgeben
