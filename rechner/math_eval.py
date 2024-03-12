@@ -256,7 +256,7 @@ def calculate(string):
     return calculate_from_node(parse(string))
 
 
-def calculate_from_node(node):
+def calculate_from_node(node) -> int | float:
     '''Ausrechnen der Zahlenwerte über die geparsten Formeln
     erwartet als Eingabe den geparsten String mit der Rechenvorschrift'''
 

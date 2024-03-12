@@ -11,6 +11,13 @@ Font = styles.Font
 
 def stringify_number(number):
     """Funktion, um Zahlen schön als String darstellen. Damit können Zahlen leicht lesbar ausgegeben werden. z.B. als 1+1/2
+
+
+    Args:
+        number (int|float): number to be stringified
+
+    Returns:
+        string: number as a readable string
     """
     fraction = Fraction(number).limit_denominator()
     whole_part = int(fraction)
@@ -24,8 +31,16 @@ def stringify_number(number):
 
 
 def check_expression(string):
+    """Funktion,um zu Überprüfen, ob eine nicht-rekursive Folge die Richtige ist
+
+    Args:
+        string (string): formel
+
+    Returns:
+        tuple[string, float|in, Literal['Normal']] | None: _description_
+    """
     print(string)
-    """Überprüfen, ob eine nicht-rekursive Folge die Richtige ist"""
+
     for idx, num in enumerate(list_with_numbers):
         if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
             return None
@@ -57,17 +72,33 @@ def normal_move(complexity_left, string):
 
 
 def calculate(n, string):
-    """Funktion zum Ausrechnen von nicht-rekursiven Formeln"""
+    """Funktion zum Ausrechnen von nicht-rekursiven Formeln
+
+    Args:
+        n (int): n von f(n)
+        string (string): formel
+
+    Returns:
+        int|float|None: int oder float als Ergebnis, None bei Fehlern
+    """
 
     string = string.replace("n", str(n))
     try:
         return calc(string)
-    except ZeroDivisionError:
+    except:
         return None
 
 
 def tokenize_fix(num):
-    """Negative Zahlen für calc vorbereiten"""
+    """Negative Zahlen für calc vorbereiten
+
+
+    Args:
+        num (int|float): Zahl, die fur calc vorbereitet werden muss
+
+    Returns:
+        string: Zahl, die fur calc vorbereitet wurde
+    """
     if num < 0:
         return f"(0-{-num})"
     else:
@@ -75,7 +106,15 @@ def tokenize_fix(num):
 
 
 def calculate_recursive(n, string):
-    """Funktion zum Ausrechnen von rekursiven Formeln"""
+    """Funktion zum Ausrechnen von rekursiven Formeln
+
+    Args:
+        n (int): n von f(n)
+        string (string): Formel
+
+    Returns:
+        int|float|None: int oder float als Ergebnis, None bei Fehlern
+    """
     # Elemente f(n-1) und f(n-2) durch den Wert ersetzen und n einfügen
     string = (
         string.replace("f(n-2)", tokenize_fix(list_with_numbers[n - 3]))
@@ -170,7 +209,8 @@ def get_inputs():
         if list_with_numbers == []:
             string = f"Enter a number:"
         else:
-            string = f"Enter a number (or press 'Enter' to finish) \n {', '.join([stringify_number(number) for number in list_with_numbers])}, "
+            string = f"Enter a number (or press 'Enter' to finish) \n {', '.join(
+                [stringify_number(number) for number in list_with_numbers])}, "
         number = input(string)
         os.system("cls" if os.name == "nt" else "clear")
         if number == "" and list_with_numbers != []:
@@ -183,7 +223,8 @@ def get_inputs():
             except:
                 print("Invalid input")
     print(
-        f"\nYou entered the following numbers: {', '.join([stringify_number(number) for number in list_with_numbers])}"
+        f"\nYou entered the following numbers: {
+            ', '.join([stringify_number(number) for number in list_with_numbers])}"
     )
     return list_with_numbers
 
@@ -216,14 +257,16 @@ def solve(numbers):
         complexity_start_time = time()
         output = run_with_complexity(complexity)
         print(
-            f"complexity {complexity} finished in {round(time()-complexity_start_time, 5)} seconds."
+            f"complexity {complexity} finished in {
+                round(time()-complexity_start_time, 5)} seconds."
         )
         if output != None:
             formula, next_number, type = output
 
             if type == "Normal":
                 print(
-                    f"the formula was '{formula}' and the next numbers are {', '.join([stringify_number(calculate(i, formula)) for i in range(len(list_with_numbers)+1, len(list_with_numbers)+5)])}."
+                    f"the formula was '{formula}' and the next numbers are {', '.join([stringify_number(
+                        calculate(i, formula)) for i in range(len(list_with_numbers)+1, len(list_with_numbers)+5)])}."
                 )
                 # Plotten von nicht-rekursiven Folgen
                 plt.plot(
@@ -258,11 +301,13 @@ def solve(numbers):
                 )
                 plt.xticks(range(0, len(list_with_numbers), 1))
                 print(
-                    f"the recursive formula was 'f(n)={formula}' and the next numbers are {', '.join([stringify_number(number) for number in list_with_numbers[len(ols_list_with_numbers):]])}."
+                    f"the recursive formula was 'f(n)={formula}' and the next numbers are {', '.join(
+                        [stringify_number(number) for number in list_with_numbers[len(ols_list_with_numbers):]])}."
                 )
 
             print(
-                f"solved complexity {complexity} problem in {round(time()-start_time, 5)} seconds."
+                f"solved complexity {complexity} problem in {
+                    round(time()-start_time, 5)} seconds."
             )
             # Plots generieren
             # Plot Folge
