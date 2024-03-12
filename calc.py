@@ -30,7 +30,7 @@ def stringify_number(number):
         return f"{whole_part}+{fractional_part}"
 
 
-def check_expression(string):
+def check_expression(string: str):
     """Funktion,um zu Überprüfen, ob eine nicht-rekursive Folge die Richtige ist
 
     Args:
@@ -53,7 +53,15 @@ def check_expression(string):
 
 def normal_move(complexity_left, string):
     """Einen Operator und eine Zahl ergänzen, wenn Komplexität übrig ist, sonst Formel prüfen
-    Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird."""
+    Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird.
+
+    Args:
+        complexity_left (int): Anzahl der Rechenzeichen, die noch an die Formel angehängt werden sollen. D.h. Anzahl der Rechenzeichen, die noch übrig sind.
+        string (_type_): Bisherige Formel
+
+    Returns:
+        tuple[str, int | float, Literal['Normal']] | None: Formel mit nächstem Element und "normal", wenn die Formel funktioniert, sonst None
+    """
     if complexity_left == 0:
         # Formel prüfen
         return check_expression(string)
@@ -94,10 +102,10 @@ def tokenize_fix(num):
 
 
     Args:
-        num (int|float): Zahl, die fur calc vorbereitet werden muss
+        num (int|float): eine eventuell negative Zahl, die für die Funktion calc vorbereitet werden muss 
 
     Returns:
-        string: Zahl, die fur calc vorbereitet wurde
+        string: Zahl als String; negative Zahlen werden als 0-Zahl dargestellt
     """
     if num < 0:
         return f"(0-{-num})"
@@ -131,7 +139,14 @@ def calculate_recursive(n, string):
 def recursive_normal_move(complexity_left, string):
     """Einen Operator und eine Zahl ergänzen, solange Komplexität übrig ist, ansonsten Formel prüfen für nicht-rekursive Folgen
 Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt wird.
-"""
+
+    Args:
+        complexity_left (int): Anzahl der Rechenzeichen, die noch an die Formel angehängt werden sollen. D.h. Anzahl der Rechenzeichen, die noch übrig sind.
+        string (_type_): Bisherige Formel
+
+    Returns:
+        tuple[str, int | float, Literal['Recursive']] | None: Formel mit nächstem Element und "Recursive", wenn die Formel funktioniert, sonst None
+    """
     if complexity_left == 0:
         if not (("f(n-2)" in string) or ("f(n-1)" in string)):
             return None
@@ -164,7 +179,15 @@ Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt w
 
 
 def recusive_first_move(complexity):
-    """Funktion zum Hinzufügen der ersten Zahl und aufrufen von recursive_normal_move"""
+    """Funktion zum Hinzufügen der ersten Zahl und aufrufen von recursive_normal_move
+
+
+    Args:
+        complexity (int): maximale Komplexität, die die Formel haben darf
+
+    Returns:
+        tuple[string, int | float, Literal['Recursive']] | None: Formel, nächste Zahl und "recursive" bei einer gefundenen Formel, sonst None
+    """
     global numbers_recusive
     numbers_recusive = numbers + ["f(n-1)", "f(n-2)", "(f(n-1)-f(n-2))"]
     for number in numbers_recusive:
@@ -174,7 +197,14 @@ def recusive_first_move(complexity):
 
 
 def first_move(complexity):
-    """Funktion zum Hinzufügen der ersten Zahl und Aufrufen von "normal_move" und recursive_fist_move, falls die Komplexität größer als 1 ist"""
+    """Funktion zum Hinzufügen der ersten Zahl und Aufrufen von "normal_move" und recursive_fist_move, falls die Komplexität größer als 1 ist.
+
+    Args:
+        complexity (int): maximale Komplexität, die die Formel haben darf
+
+    Returns:
+        tuple[string, int | float, Literal['Normal']] | None: Formel, nächste Zahl und "Normal" bei einer gefundenen Formel, sonst None
+    """
     for num in numbers:
         result = normal_move(complexity, num)
         if result != None:
@@ -184,7 +214,14 @@ def first_move(complexity):
 
 
 def run_with_complexity(max_complexity):
-    """Wrapper (Übersichtliches Interface) für "first_move" """
+    """Wrapper (Übersichtliches Interface) für "first_move"
+
+    Args:
+        max_complexity (int): maximale Komplexität der Formeln
+
+    Returns:
+        tuple[str, int | float, Literal['Normal'] | Literal['Recursive']] | None: Formel oder None
+    """
     global operators, numbers
     # Erlaubte Operatoren festlegen
     operators = [
@@ -202,7 +239,11 @@ def run_with_complexity(max_complexity):
 
 
 def get_inputs():
-    """Funktion zum Erhalten von Nutzereingaben, wenn nicht das GUI, sondern die Kommandozeile verwendet wird"""
+    """Funktion zum Erhalten von Nutzereingaben, wenn nicht das GUI, sondern die Kommandozeile verwendet wird
+
+    Returns:
+        list[float | int]: nutzereingaben
+    """
     list_with_numbers = []
     os.system("cls" if os.name == "nt" else "clear")
     while True:
@@ -232,8 +273,15 @@ def get_inputs():
 real_print = print   # Die standard-python print-Funktion habe ich umbenannt
 
 
-def solve(numbers):
-    """Zentrale Funktion zum Lösen von Formeln"""
+def solve(numbers) -> tuple[str, list[float | int], str, str, list[float | int]]:
+    """Zentrale Funktion zum Lösen von Formeln
+
+    Args:
+        numbers (list[int | float]): zahlenfolge zum weiterführen
+
+    Returns:
+        tuple[str, list[float | int], Literal['Normal', 'Recursive'], str, list[float | int]]: Formel, Weitergeführte Zahlen, Typ der Formel, Log, Reihe
+    """
     plt.clf()   # Plots Löschen
     global log
     log = ""
@@ -333,6 +381,7 @@ def solve(numbers):
             solved = True
             print((formula, list_with_numbers, type))
             return (formula, list_with_numbers, type, log, series)
+
         else:
             complexity += 1
 
