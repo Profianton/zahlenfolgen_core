@@ -14,22 +14,68 @@ class operator:
 
 
 def add(x, y):
+    """Addiere zwei Zahlenwerte 
+
+    Args:
+        x (int | float ): 1.Summand
+        y (int | float ): 2.Summand
+    Returns:
+        int | float : Summe
+    """
     return x + y
 
 
 def subtract(x, y):
+    """Subtrahiere zwei Zahlenwerte
+
+    Args:
+        x (int | float ): Minuend
+        y (int | float ): Subtrahend
+
+    Returns:
+        (int | float ) : Differenz
+    """
     return x - y
 
 
 def divide(x, y):
+    """Dividiere zwei Zahlenwerte
+
+    Args:
+        x (int | float ): Dividend
+        y (int | float ): Divisor
+
+    Returns:
+        int | float : Quotient
+    """
     return x / y
 
 
 def multiply(x, y):
+    """Multipliziere zwei Zahlenwerte
+
+    Args:
+        x (int | float ): 1.Faktor
+        y (int | float ): 2.Faktor
+
+    Returns:
+        int | float : Produkt
+    """
     return x * y
 
 
 def pow(b, e):
+    """Potenzen berechnen; 
+    Abbruch, wenn die Zahl zu groß wird
+    In meiner Anwendung steht im Exponenten kein float, prinzipiell wäre das aber möglich.
+
+    Args:
+        b (int | float ): Basis
+        e (int | float ): Exponent
+
+    Returns:
+         int | float : Ergebnis der Potenzaufgabe
+    """
     try:
         return b**e
     except:
@@ -51,10 +97,26 @@ operators = [
 
 
 def is_operator(char):
+    """Überprüft ob ein beliebiges Zeichen ein Rechenzeichen (Teil der Liste operators) ist.
+
+    Args:
+        char (string): Beliebiges Zeichen
+
+    Returns:
+        bool: Ja, wenn Zeichen in der Liste operators ist. Nein, wenn es nicht in der Liste operators ist.
+    """
     return True in [e.zeichen == char for e in operators]
 
 
 def get_operator_from_string(string):
+    """Es wird der passende Rechenoperator inkl. Funktion passend zum Rechenzeichen zurückgegeben
+
+    Args:
+        string (string): ein Rechenzeichen
+
+    Returns:
+        operator: Gibt einen Rechenoperator zurück.
+    """
     return operators[[e.zeichen == string for e in operators].index(True)]
 
 
@@ -179,7 +241,7 @@ def parse_klammern(parts):
 
 
 def get_title(node):
-    """Funktion, die den Namen eines Elements im Rechenbaums generiert"""
+    """Funktion, die den Namen eines Elements im Rechenbaums generiert - wird zum Debuggen verwendet"""
     type_of_node, value = node
     if type_of_node == "n":
         return value
