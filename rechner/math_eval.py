@@ -113,6 +113,14 @@ reihenfolge = [
 
 
 def parse_to_nested_operator(parts):
+    """Diese Funktion verwandelt eine liste von Operatoren in eine baumstruktur
+
+    Args:
+        parts: liste von Operatoren und Zahlen
+
+    Returns:
+        tree structure
+    """
     for operators_on_level in reihenfolge:
         i = 0
         while i < len(parts):
