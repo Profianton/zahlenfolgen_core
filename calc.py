@@ -39,7 +39,7 @@ def check_expression(string: str):
     Returns:
         tuple[string, float|in, Literal['Normal']] | None: _description_
     """
-    print(string)
+    # print(string)
 
     for idx, num in enumerate(list_with_numbers):
         if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
@@ -150,7 +150,7 @@ Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt w
     if complexity_left == 0:
         if not (("f(n-2)" in string) or ("f(n-1)" in string)):
             return None
-        print(string)
+        # print(string)
         items_to_check = list(enumerate(list_with_numbers))
         if "f(n-2)" in string:
             items_to_check = items_to_check[2:]
@@ -333,7 +333,7 @@ def solve(numbers) -> tuple[str, list[float | int], str, str, list[float | int]]
                     ],
                     "o "
                 )
-                plt.xticks(range(0, len(list_with_numbers)+1, 1))
+                plt.xticks(range(0, len(list_with_numbers)+10, 1))
             else:
                 ols_list_with_numbers = list_with_numbers.copy()
                 for i in range(len(list_with_numbers) + 1, len(list_with_numbers) + 10):
