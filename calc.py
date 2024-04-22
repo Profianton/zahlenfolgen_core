@@ -1,5 +1,5 @@
 # Importiert selbstgeschriebene Funktion zum Ausrechnen von Formeln
-from .rechner.math_eval import calculate as calc
+from rechner.math_eval import calculate as calc
 from time import time
 import os
 from fractions import Fraction
@@ -446,5 +446,5 @@ zahlenfolgen_dir = "/".join(__file__.replace("\\", "/").split("/")[:-2])
 if __name__ == "__main__":
     start = time()
     for _ in range(5):
-        solve([1, 1, 2, 3, 5, 8, 13])
+        solve([1, 1, 2, 3, 5, 8, 13,1])
     print(f"time_average: {(time()-start)/5}")
