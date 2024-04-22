@@ -39,10 +39,17 @@ def check_expression(string: str):
     Returns:
         tuple[string, float|in, Literal['Normal']] | None: _description_
     """
-    # print(string)
-
+    if "n" not in string:
+        return None
+    # print(string, end=" "*(20-len(string)))
     for idx, num in enumerate(list_with_numbers):
+        """try:
+            print(f"f({idx+1})=",
+                  stringify_number(calculate(idx + 1, string)), end="\t")
+        except:
+            print(f"f({idx+1})=NaN", end="")"""
         if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
+            # print()
             return None
     # Rechne nächstes Element aus, wenn die ersten Folgeglieder passen
     n = len(list_with_numbers) + 1
@@ -291,7 +298,7 @@ def solve(numbers) -> tuple[str, list[float | int], str, str, list[float | int]]
         global real_print
         real_print(x)
         global log
-        log += str(x) + "\\n"
+        log += str(x) + "\n"
 
     print(f"solving {numbers}")
     global list_with_numbers
@@ -359,7 +366,7 @@ def solve(numbers) -> tuple[str, list[float | int], str, str, list[float | int]]
             )
             # Plots generieren
             # Plot Folge
-            plt.title("Folge")
+            plt.title("f(n)")
 
             plt.savefig(f"{zahlenfolgen_dir}/plot.png")
 
@@ -368,7 +375,7 @@ def solve(numbers) -> tuple[str, list[float | int], str, str, list[float | int]]
             for i in range(len(list_with_numbers) + 1, len(list_with_numbers) + 10):
                 list_with_numbers.append(calculate_recursive(i, formula))
             plt.xticks(range(0, len(list_with_numbers), 1))
-            plt.title("Reihe (Summe der Folgenelemente)")
+            plt.title("∑f(n)")
             series = [sum(list_with_numbers[:i+1]) for i in range(
                 0, len(list_with_numbers), 1)]  # Mathematische Reihe
             plt.plot(
@@ -433,11 +440,11 @@ def gen_excel(formula, list_with_numbers, type):
     wb.save(f"{zahlenfolgen_dir}/excel.xlsx")
 
 
+zahlenfolgen_dir = "/".join(__file__.replace("\\", "/").split("/")[:-2])
+
 # Referenzcode zum Testen der Performanz des Programms
 if __name__ == "__main__":
     start = time()
     for _ in range(5):
         solve([1, 1, 2, 3, 5, 8, 13])
     print(f"time_average: {(time()-start)/5}")
-
-zahlenfolgen_dir = "/".join(__file__.replace("\\", "/").split("/")[:-2])
