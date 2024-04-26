@@ -1,5 +1,5 @@
 # Importiert selbstgeschriebene Funktion zum Ausrechnen von Formeln
-from rechner.math_eval import calculate as calc
+from .rechner.math_eval import calculate as calc
 from time import time
 import os
 from fractions import Fraction
