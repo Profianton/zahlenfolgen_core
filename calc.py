@@ -33,19 +33,19 @@ def stringify_number(number):
 def check_expression(string: str):
     """Funktion,um zu Überprüfen, ob eine nicht-rekursive Folge die Richtige ist
 
-    Args:
-        string (string): formel
+     Args:
+         string (string): formel
 
-    Returns:
-        tuple[string, float|in, Literal['Normal']] | None: _description_
-    """
-    if "n" not in string:
-        return None
+     Returns:
+         tuple[string, float|in, Literal['Normal']] | None: _description_
+     """
+    # if "n" not in string:
+    #     return None
     # print(string, end=" "*(20-len(string)))
     for idx, num in enumerate(list_with_numbers):
         """try:
             print(f"f({idx+1})=",
-                  stringify_number(calculate(idx + 1, string)), end="\t")
+                    stringify_number(calculate(idx + 1, string)), end="\t")
         except:
             print(f"f({idx+1})=NaN", end="")"""
         if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
@@ -446,5 +446,5 @@ zahlenfolgen_dir = "/".join(__file__.replace("\\", "/").split("/")[:-2])
 if __name__ == "__main__":
     start = time()
     for _ in range(5):
-        solve([1, 1, 2, 3, 5, 8, 13,1])
+        solve([1, 1, 2, 3, 5, 8, 13, 1])
     print(f"time_average: {(time()-start)/5}")
