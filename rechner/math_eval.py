@@ -1,5 +1,6 @@
 import math
 
+
 '''In math_eval wird eine eigene Funktion geschrieben, die die  Standard-Auswerte-Funktion eval ersetzen kann'''
 
 
@@ -13,7 +14,37 @@ class operator:
         return f"operator({self.name})"
 
 
-def add(x, y):
+class nested_value:
+    pass
+
+
+class nested_operator(nested_value):
+    def __init__(self, op: operator, a: nested_value, b: nested_value) -> None:
+        self.op: operator = op
+        self.a: nested_value = a
+        self.b: nested_value = b
+
+    def __float__(self):
+        return self.op.function(float(self.a), float(self.b))
+
+
+class number(nested_value):
+    def __init__(self, val: float) -> None:
+        self.val: float = val
+
+    def __float__(self):
+        return self.val
+
+    def __repr__(self) -> str:
+        return str(self.val)
+
+
+class klammer:
+    def __init__(self, dir):
+        self.dir = dir
+
+
+def add(x: float, y: float):
     """Addiere zwei Zahlenwerte 
 
     Args:
@@ -105,7 +136,10 @@ def is_operator(char):
     Returns:
         bool: Ja, wenn Zeichen in der Liste operators ist. Nein, wenn es nicht in der Liste operators ist.
     """
-    return True in [e.zeichen == char for e in operators]
+    return operators_dict.get(char, False) != False
+
+
+operators_dict = {e.zeichen: e for e in operators}
 
 
 def get_operator_from_string(string):
@@ -117,7 +151,7 @@ def get_operator_from_string(string):
     Returns:
         operator: Gibt einen Rechenoperator zurück.
     """
-    return operators[[e.zeichen == string for e in operators].index(True)]
+    return operators_dict[string]
 
 
 def analyse(string):
@@ -147,16 +181,16 @@ def analyse(string):
                 if i >= len(string):
                     break
                 char = string[i]
-            num = float(num)
-            parts.append(("n", num))
+
+            parts.append(number(float(num)))
             continue
         elif is_operator(char):
-            parts.append(("o", get_operator_from_string(char)))
+            parts.append(get_operator_from_string(char))
         elif char in ["(", ")"]:
             if char == "(":
-                parts.append(("klammer", "auf"))
+                parts.append(klammer(1))
             else:
-                parts.append(("klammer", "zu"))
+                parts.append(klammer(-1))
         else:
             raise ValueError(
                 f"non-valid character:{char} in string:{string} at position {i}"
@@ -181,25 +215,22 @@ def parse_to_nested_operator(parts):
         parts: liste von Operatoren und Zahlen
 
     Returns:
-        tree structure
+        nested_value
     """
     for operators_on_level in reihenfolge:
         i = 0
         while i < len(parts):
-            type, value = parts[i]
-            if type == "o":
+            value = parts[i]
+            if type(value) == operator:
                 if value in operators_on_level:
-                    parts[i] = (
-                        "no",
-                        {
-                            "o": value,
-                            "other_points": [parts[i - 1], parts[i + 1]],
-                        },
-                    )
-                    parts.pop(i - 1)
+                    parts[i-1:i+1] = nested_operator(
+                        value, parts[i - 1], parts[i + 1]),
+
+                    # parts.pop(i - 1)
                     i -= 1
-                    parts.pop(i + 1)
+                    # parts.pop(i + 1)
                     continue
+
             i += 1
 
     return parts[0]
@@ -218,14 +249,13 @@ def parse_klammern(parts):
     i = 0
     klammer_layer = 0
     while i < len(parts):
-        part = parts[i]
-        type, value = part
-        if type == "klammer":
-            if value == "auf":
+        value = parts[i]
+        if type(value) == klammer:
+            if value.dir == 1:
                 klammer_layer += 1
                 if klammer_layer == 1:
                     start_i = i
-            elif value == "zu":
+            else:
                 klammer_layer -= 1
 
                 if klammer_layer == 0:
@@ -239,6 +269,8 @@ def parse_klammern(parts):
 
     return parts
 
+# fix
+
 
 def get_title(node):
     """Funktion, die den Namen eines Elements im Rechenbaums generiert - wird zum Debuggen verwendet"""
@@ -251,6 +283,8 @@ def get_title(node):
         return value["o"].zeichen
     else:
         raise ValueError("node not known   node:" + node)
+
+# fix
 
 
 def draw_node(node):
@@ -366,15 +400,4 @@ def calculate_from_node(node) -> int | float:
     Returns:
         int | float: Ergebnis
     """
-
-    type, value = node  # Tupel node wird in 2 Variablen entpackt
-    if type == "n":  # Falls eine Zahl "n" (number) - Wert zurückkgeben
-        return value
-    # Falls ein verschachtelter Operator (nested operator) "n" - Wert ausrechnen und zurückgeben
-    elif type == "no":
-        return value["o"].function(
-            calculate_from_node(value["other_points"][0]),
-            calculate_from_node(value["other_points"][1]),
-        )
-    else:
-        raise TypeError(f"Unknown operator: ({type}, {value})")
+    return float(node)
