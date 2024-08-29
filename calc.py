@@ -1,5 +1,5 @@
 # Importiert selbstgeschriebene Funktion zum Ausrechnen von Formeln
-from rechner.math_eval import calculate as calc
+from .rechner.math_eval import calculate as calc
 from time import time
 import os
 from fractions import Fraction
@@ -50,12 +50,12 @@ def check_expression(string: str):
             print(f"f({idx+1})=NaN", end="")"""
         if calculate(idx + 1, string) != num:  # Wenn eine Folge nicht passt, gebe None zurück
             # print()
-            return None
+            return
     # Rechne nächstes Element aus, wenn die ersten Folgeglieder passen
     n = len(list_with_numbers) + 1
     result = calculate(n, string)
     if result != None:
-        return string, result, "Normal"
+        yield string, result, "Normal"
 
 
 def normal_move(complexity_left, string):
@@ -71,19 +71,17 @@ def normal_move(complexity_left, string):
     """
     if complexity_left == 0:
         # Formel prüfen
-        return check_expression(string)
+        yield from check_expression(string)
+        return
     # operator anhängen
     for operator in operators:
         if operator["c"] <= complexity_left:
             # Zahl anhängen
             for num in numbers:
-                result = normal_move(
+                yield from normal_move(
                     complexity_left -
                     operator["c"], string + operator["z"] + num
                 )
-                # Ergebnis der Formel zurückgeben, wenn die Formel passt
-                if result != None:
-                    return result
 
 
 def calculate(n, string):
@@ -156,7 +154,7 @@ Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt w
     """
     if complexity_left == 0:
         if not (("f(n-2)" in string) or ("f(n-1)" in string)):
-            return None
+            return
         # print(string)
         items_to_check = list(enumerate(list_with_numbers))
         if "f(n-2)" in string:
@@ -167,22 +165,19 @@ Die Komplexität wird erhöht, wenn ein Operator, wie +, -, *, /, ^ eingefügt w
             if calculate_recursive(idx + 1, string) == num:
                 1
             else:
-                return None
+                return
         i = len(list_with_numbers) + 1
         result = calculate_recursive(i, string)
         if result != None:
-            return string, result, "Recursive"
-        else:
-            return None
+            yield string, result, "Recursive"
+        return
     for operator in operators:
         if operator["c"] <= complexity_left:
             for num in numbers_recusive:
-                result = recursive_normal_move(
+                yield from recursive_normal_move(
                     complexity_left -
                     operator["c"], string + operator["z"] + num
                 )
-                if result != None:
-                    return result
 
 
 def recusive_first_move(complexity):
@@ -198,9 +193,7 @@ def recusive_first_move(complexity):
     global numbers_recusive
     numbers_recusive = numbers + ["f(n-1)", "f(n-2)", "(f(n-1)-f(n-2))"]
     for number in numbers_recusive:
-        result = recursive_normal_move(complexity, number)
-        if result != None:
-            return result
+        yield from recursive_normal_move(complexity, number)
 
 
 def first_move(complexity):
@@ -213,11 +206,10 @@ def first_move(complexity):
         tuple[string, int | float, Literal['Normal']] | None: Formel, nächste Zahl und "Normal" bei einer gefundenen Formel, sonst None
     """
     for num in numbers:
-        result = normal_move(complexity, num)
-        if result != None:
-            return result
+        yield from normal_move(complexity, num)
     if complexity - 1 >= 0:
-        return recusive_first_move(complexity - 1)
+        yield from recusive_first_move(complexity - 1)
+    yield None
 
 
 def run_with_complexity(max_complexity):
@@ -242,7 +234,7 @@ def run_with_complexity(max_complexity):
     numbers = [f"{num}" for num in list(
         range(1, 6))] + ["n", "(n-1)", "(0-1)", "10"]
 
-    return first_move(max_complexity)
+    return next(first_move(max_complexity))
 
 
 def get_inputs():
